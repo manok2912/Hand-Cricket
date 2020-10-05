@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css"
+    integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
+
+  <title>Hello, world!</title>
+</head>
+
+<body>
+  <h1 class="text-center">Hand Cricket</h1>
+
+  <div class="container">
+
+    <div class="row">
+      <div class="col text-center border">
+
+        <p class="h3">Human Score</p>
+        <h1 class="display-3"><span id="hScore">0</span>/0</h1>
+        <p class="h5" id="hOvers">0</p>
+
+        <div class="row">
+          <div class="col text-center border">
+            <p class="h6">S/R</p>
+            <p class="h4" id="hStrikeRate">000</p>
+          </div>
+          <div class="col text-center border">
+            <p class="h6">RR</p>
+            <p class="h4" id="hRunRate">000</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col text-center border">
+
+        <p class="h3">vs</p>
+
+        <div class="row">
+          <div class="col text-center border">
+            <p class="h6">Human Total</p>
+            <p class="h4" id="hTotal">0</p>
+          </div>
+          <div class="col text-center border">
+            <p class="h6">Computer Total</p>
+            <p class="h4" id="cTotal">0</p>
+          </div>
+        </div>
+
+        <p class="h5" id="targetCard"></p>
+
+
+      </div>
+
+      <div class="col text-center border">
+        <p class="h3">Computer Score</p>
+        <h1 class="display-3"><span id="cScore">0</span>/0</h1>
+        <p class="h5" id="cOvers">0</p>
+
+        <div class="row">
+          <div class="col text-center border">
+            <p class="h6">S/R</p>
+            <p class="h4" id="cStrikeRate">000</p>
+          </div>
+          <div class="col text-center border">
+            <p class="h6">RR</p>
+            <p class="h4" id="cRunRate">000</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-auto border overflow-auto p-2" id="timeLineH"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-auto border overflow-auto p-2" id="timeLineC"></div>
+      </div>
+
+      <div class="row">
+        <div class="col text-center border">
+          <button type="button" class="btn btn-primary" id="score0">0</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-secondary" id="score1">1</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-secondary" id="score2">2</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-secondary" id="score3">3</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-warning" id="score4">4</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-danger" id="score5">5</button>
+        </div>
+        <div class="col text-center border">
+          <button type="button" class="btn btn-success" id="score6">6</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper.js -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.bundle.min.js"
+      integrity="sha384-BOsAfwzjNJHrJ8cZidOg56tcQWfp6y72vEJ8xQ9w6Quywb24iOsW913URv1IS4GD"
+      crossorigin="anonymous"></script>
+    <script>
+
+      window.onbeforeunload = function () {
+        return "closing the tab ?"
+      }
+
+      var humanScore = 0
+      var ComputerScore = 0
+      var targetScore = 0
+
+      var currentStatus = "bat"
+
+      var humanScoreArray = new Array();
+      var ComputerScoreArray = new Array();
+
+      const score0 = document.querySelector("#score0")
+      const score1 = document.querySelector("#score1")
+      const score2 = document.querySelector("#score2")
+      const score3 = document.querySelector("#score3")
+      const score4 = document.querySelector("#score4")
+      const score5 = document.querySelector("#score5")
+      const score6 = document.querySelector("#score6")
+
+      const hOvers = document.querySelector("#hOvers")
+      const hScore = document.querySelector("#hScore")
+      const hStrikeRate = document.querySelector("#hStrikeRate")
+      const hRunRate = document.querySelector("#hRunRate")
+
+      const cOvers = document.querySelector("#cOvers")
+      const cScore = document.querySelector("#cScore")
+      const cStrikeRate = document.querySelector("#cStrikeRate")
+      const cRunRate = document.querySelector("#cRunRate")
+
+      const hTotal = document.querySelector("#hTotal")
+      const cTotal = document.querySelector("#cTotal")
+
+      const targetCard = document.querySelector("#targetCard")
+
+
+      const timeLineH = document.querySelector("#timeLineH")
+      const timeLineC = document.querySelector("#timeLineC")
+
+      randomScore = () => Math.floor(Math.random() * 7)
+      overCal = (data) => (Math.floor(data / 6)) + (Math.floor(data % 6 + 1) / 10)
+
+      function sumFunction(total, value) { return total + value; }
+
+      addScoreH = () => humanScoreArray.reduce(sumFunction)
+
+      addScoreC = () => ComputerScoreArray.reduce(sumFunction)
+
+      timelineColor = (data) => {
+        switch (data) {
+          case 0:
+            return "badge m-1 rounded-pill bg-primary d-inline"
+            break;
+          case 1:
+          case 2:
+          case 3:
+            return "badge m-1 rounded-pill bg-secondary d-inline"
+            break;
+          case 4:
+            return "badge m-1 rounded-pill bg-warning text-dark d-inline"
+            break;
+          case 5:
+            return "badge m-1 rounded-pill bg-danger d-inline"
+            break;
+          case 6:
+            return "badge m-1 rounded-pill bg-success d-inline"
+            break;
+        }
+      }
+
+      updateTarget = (data) => {
+        targetCard.innerHTML = data
+      }
+
+      updateTotalH = () => {
+        humanScore = addScoreH()
+        targetScore = humanScore + 1
+        hTotal.innerHTML = humanScore
+        //console.log(humanScore);
+      }
+
+      updateTotalC = () => {
+        ComputerScore = addScoreC()
+        cTotal.innerHTML = ComputerScore
+        //console.log(ComputerScore);
+      }
+
+      removeAllSpans = (element) => {
+        while (element.firstChild) { element.removeChild(element.firstChild); }
+      }
+
+      clearArray = () => {
+        humanScoreArray.length = 0
+        ComputerScoreArray.length = 0
+        console.log("####");
+        console.log(humanScoreArray);
+        console.log(ComputerScoreArray);
+        removeAllSpans(timeLineH)
+        removeAllSpans(timeLineC)
+      }
+
+
+      updateStatH = () => {
+        hOvers.innerHTML = overCal(humanScoreArray.length - 1)
+        hScore.innerHTML = addScoreH()
+        hStrikeRate.innerHTML = ((addScoreH() * 100) / humanScoreArray.length).toFixed(2)
+        hRunRate.innerHTML = ((addScoreH() / humanScoreArray.length) * 6).toFixed(1)
+        updateTotalH()
+      }
+
+      updateStatC = () => {
+        cOvers.innerHTML = overCal(ComputerScoreArray.length - 1)
+        cScore.innerHTML = addScoreC()
+        cStrikeRate.innerHTML = ((addScoreC() * 100) / ComputerScoreArray.length).toFixed(2)
+        cRunRate.innerHTML = ((addScoreC() / ComputerScoreArray.length) * 6).toFixed(1)
+        updateTotalC()
+      }
+
+
+      function upatetimeLineH() {
+        timeLineH.scrollLeft += 100;
+        var score = humanScoreArray[humanScoreArray.length - 1];
+        var span = document.createElement("span");
+        span.className = timelineColor(score)
+        span.innerHTML = score
+        timeLineH.appendChild(span);
+      }
+
+      function upatetimeLineC() {
+        timeLineC.scrollLeft += 100;
+        var score = ComputerScoreArray[ComputerScoreArray.length - 1];
+        var span = document.createElement("span");
+        span.className = timelineColor(score)
+        span.innerHTML = score
+        timeLineC.appendChild(span);
+      }
+
+      updatebatScore = (scoreH) => {
+        var scoreC = randomScore()
+
+        if (scoreH == scoreC) {
+          console.log(scoreH + "--" + scoreC);
+          alert("you are out")
+          currentStatus = "bowl"
+          updateTotalH()
+          clearArray()
+          updateTarget("Computer Neeed " + targetScore + " to Win")
+          return true;
+        }
+        humanScoreArray.push(scoreH);
+        ComputerScoreArray.push(scoreC);
+
+        console.log(humanScoreArray);
+        console.log(ComputerScoreArray);
+
+        upatetimeLineH()
+        upatetimeLineC()
+        updateStatH()
+      }
+
+      updatebowlScore = (scoreH) => {
+
+        var scoreC = randomScore()
+
+        var runsTowin = targetScore - ComputerScore
+        updateTarget("Computer Neeed " + runsTowin + " to Win")
+
+
+        if (ComputerScore > humanScore) {
+          alert("Computer won the game")
+          updateTarget("Computer won by no loss")
+          return true
+
+        }
+        else if (scoreH == scoreC) {
+          console.log(scoreH + "--" + scoreC);
+          updateTarget("Human won by " + runsTowin + " Runs")
+          alert("you won the game")
+          return true
+        }
+
+        humanScoreArray.push(scoreH);
+        ComputerScoreArray.push(scoreC);
+
+
+        console.log(humanScoreArray);
+        console.log(ComputerScoreArray);
+
+        upatetimeLineH()
+        upatetimeLineC()
+        updateStatC()
+
+
+
+      }
+
+
+      updateball = (score, status) => {
+        switch (status) {
+          case 'bat':
+            console.log('batting');
+            updatebatScore(score)
+            break
+          case 'bowl':
+            console.log('bowling');
+            updatebowlScore(score)
+            break
+        }
+      }
+
+      score0.addEventListener("click", function () { updateball(0, currentStatus) })
+      score1.addEventListener("click", function () { updateball(1, currentStatus) })
+      score2.addEventListener("click", function () { updateball(2, currentStatus) })
+      score3.addEventListener("click", function () { updateball(3, currentStatus) })
+      score4.addEventListener("click", function () { updateball(4, currentStatus) })
+      score5.addEventListener("click", function () { updateball(5, currentStatus) })
+      score6.addEventListener("click", function () { updateball(6, currentStatus) })
+    </script>
+</body>
+
+</html>
